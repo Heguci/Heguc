@@ -1,9 +1,8 @@
--- BEGIN FIX
 -- n1 and n2 should be such that n1 ℕ suc (λ _ → zero) ≠ n2 ℕ suc (λ _ → zero)
 n1 n2 : (A : Set) → (A → A) → (⊤ → A) → A
 -- END FIX
-n1 = λ A x x₁ → {!x!}
-n2 = λ A x x₁ → {!!}
+n1 = λ A f → λ x → f (x (tt))
+n2 = λ A f y → y (tt)
  
 -- BEGIN FIX
 test-n1-n2 : ¬ Eqn (n1 ℕ suc (λ _ → zero)) (n2 ℕ suc (λ _ → zero))
@@ -13,18 +12,17 @@ test-n1-n2 = λ x → x
 -- BEGIN FIX
 some¬ : (A : Set) → ¬ ¬ ¬ A → ¬ (A ⊎ ⊥)
 -- END FIX
-some¬ = λ A x x₁ → {!x (λ x₂ → x₁ (inj₁ x₁ ))!}
+some¬ = λ A x x₁ → {!inj₂ x₁!}
 
 -- BEGIN FIX
 iso : (A B C : Set) → (A ⊎ B → C ⊎ ⊥) ↔ ((B → C) × (A → C))
 -- END FIX
-iso = λ A B C → (λ x → (λ x₁ → {!x (inj₂ x₁)!}) , (λ x₁ → {!x (inj₁ x₁)!})) , (λ x x₁ → {!!})
-
+iso = λ A B C → (λ x → (λ x₁ → case (x (inj₂ x₁)) (λ z → z) (λ ())) , (λ x₁ → case (x (inj₁ x₁)) (λ z → z) (λ ()))) , (λ x x₁ → case x₁ (λ z → inj₁ (proj₂ x z)) (λ z → inj₁ (proj₁ x z)))
 
 
 iso2 : (A B C : Set) → (A ⊎ B → C) ↔ ((A → C) × (B → C))
 -- END FIX
-iso2 = λ A B C → (λ x → (λ x₁ → {!x (inj₁ x₁)!}) , λ x₁ → {!x (inj₂ x₁)!}) , {!!}
+iso2 = λ A B C → (λ x → (λ x₁ → {!!}) , λ x₁ → {!x (inj₂ x₁)!}) , {!!}
 
 
 
@@ -32,8 +30,7 @@ iso2 = λ A B C → (λ x → (λ x₁ → {!x (inj₁ x₁)!}) , λ x₁ → {!
 -- BEGIN FIX
 uncurry' : (A B C : Set) → (A → B → C) ↔ (B × (A ⊎ ⊥) → C)
 -- END FIX
-uncurry' = λ A B C → (λ x x₁ → {!!}) , (λ x x₁ x₂ → x (x₂ , inj₁ x₁))
-
+uncurry' = λ A B C → (λ x x₁ → case (proj₂ x₁) (λ z → x z (proj₁ x₁)) (λ ())) , (λ x x₁ x₂ → x (x₂ , inj₁ x₁))
 -- BEGIN FIX
 is1000 : ℕ → Bool
 -- END FIX
@@ -77,7 +74,7 @@ eq1 (suc x) (suc y) = {!eq1 x  (suc y)!}
 -- BEGIN FIX
 fcomm : (x y : ℕ) → (f : ℕ → ℕ) → Eqn (f y + f x) (f x + f y)
 -- END FIX
-fcomm = λ x y f → {!!}
+fcomm = λ x y f → case {!!} (λ x₁ → x₁) (λ z → z)
 
 -- BEGIN FIX
 eq2 : (x y z : ℕ) → Eqn ((x + y) + z) (((x + 0) + (y + 0)) + (z + 0))
