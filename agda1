@@ -1,0 +1,88 @@
+eq3 : ℕ → ℕ → ℕ → Bool
+-- END FIX
+eq3 zero zero zero = true
+eq3 zero zero (suc c) = false
+eq3 zero (suc b) zero = false
+eq3 zero (suc b) (suc c) = false
+eq3 (suc a) zero zero = false
+eq3 (suc a) zero (suc c) = false
+eq3 (suc a) (suc b) zero = false
+eq3 (suc a) (suc b) (suc c) =  eq3 a b c
+
+-- BEGIN FIX
+test-eq3-1 : Eq Bool (eq3 323 323 (321 + 2)) true
+test-eq3-1 = refl
+test-eq3-2 : Eq Bool (eq3 323 323 321) false
+test-eq3-2 = refl
+test-eq3-3 : Eq Bool (eq3 323 321 323) false
+test-eq3-3 = refl
+test-eq3-4 : Eq Bool (eq3 321 323 323) false
+test-eq3-4 = refl
+test-eq3-5 : Eq Bool (eq3 321 323 321) false
+test-eq3-5 = refl
+
+is666 : ℕ → Bool
+-- END FIX
+is666 a = eq3 a 666 666
+
+-- BEGIN FIX
+test-is666-1 : Eq Bool (is666 666) true
+test-is666-1 = refl
+test-is666-2 : Eq Bool (is666 667) false
+test-is666-2 = refl
+test-is666-3 : Eq Bool (is666 665) false
+test-is666-3 = refl
+
+weirdLogicalEquiv : (A B C : Set) → (A → (B → C × A)) ↔ (B × A → (C ⊎ ⊥))
+-- END FIX
+weirdLogicalEquiv = λ A B C → (λ x x₁ → inj₁ (proj₁ (x (proj₂ x₁) (proj₁ x₁)))) ,
+                                        (λ x x₁ x₂ → case (x (x₂ , x₁)) (λ z → z) (λ b → exfalso(b)) , x₁)
+
+-- BEGIN FIX
+-- n1 and n2 should be such that n1 ℕ zero suc ≠ n2 ℕ zero suc
+n1 n2 : (A : Set) → A → (A → A) → A
+-- END FIX
+n1 = λ A x x₁ → x₁ x
+n2 = λ A x x₁ → x
+ 
+-- BEGIN FIX
+test-n1-n2 : ¬ Eqn (n1 ℕ zero suc) (n2 ℕ zero suc)
+test-n1-n2 = λ x → x
+
+some¬ : (A : Set) → ¬ ¬ ¬ ¬ A → ¬ ¬ (A ⊎ ⊥)
+-- END FIX
+some¬ = λ A z z₁ → z (λ z₂ → z₂ (λ z₃ → z₁ (inj₁ z₃)))
+
+-- BEGIN FIX
+iso : (A B C : Set) → (A ⊎ B → C) ↔ ((A → C) × (B → C))
+-- END FIX
+iso = λ A B C → (λ x → (λ x₁ → x (inj₁ x₁)) , (λ x₁ → x (inj₂ x₁))) ,
+        (λ x x₁ → case x₁ (proj₁ x) (proj₂ x))
+
+-- BEGIN FIX
+getX : (X : Set) → X ⊎ X ⊎ (⊤ → X) ⊎ (((A : Set) → A → A) → X) → X
+-- END FIX
+getX = λ X x → case x (λ z → z) (λ x₁ → case x₁ (λ x₂ → x₂) (λ x₂ → case x₂ (λ z → z tt) (λ x₃ → x₃ (λ A z → z)))) 
+
+-- BEGIN FIX
+lemma1 : ¬ ((n : ℕ) → Eqn (3 + n) (n + 1))
+-- END FIX
+lemma1 f = f zero
+
+-- BEGIN FIX
+lemma2 : (n : ℕ) → ¬ Eqn (3 + n) (n + 1)
+-- END FIX
+lemma2 zero = λ z → z
+lemma2 (suc n) = lemma2 n
+
+-- BEGIN FIX
+eq : (x y z : ℕ) → Eqn (x + (y + y)) ((y + 0) + (y + x))
+-- END FIX
+eq zero zero zero = tt
+eq zero zero (suc z) = tt
+eq zero (suc y) zero = eq {!!} {!!} {!!}
+eq zero (suc y) (suc z) = eq zero (suc y) z
+eq (suc x) zero zero = eq x zero zero
+eq (suc x) zero (suc z) = eq x zero z
+eq (suc x) (suc y) zero = eq {!!} {!!} {!!}
+eq (suc x) (suc y) (suc z) = eq (suc x) (suc y) z
